@@ -12,6 +12,7 @@ typedef struct {
     int NB_POINTS[NB_CONCOURS];
 } INCRIRE;
 
+
 typedef struct {
     char nom[NB_Max];
 } CONCOURS;
@@ -271,13 +272,12 @@ void inscrire_programme(void) {
 
             // Vérifier si le participant a au moins un gain 
 
-            int aucun_gain = 0;
-            if (nombres_concours == 0) aucun_gain = 1;
+            int aucun_gain = 1;
             for (int u = 0; u < nombres_concours; ++u) {
 
-                if (I[recup].NB_POINTS[u] == 0) {
+                if (I[recup].NB_POINTS[u] > 0) {
 
-                    aucun_gain = 1;
+                    aucun_gain = 0;
                     break;
                 }
             }
