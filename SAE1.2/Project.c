@@ -4,7 +4,7 @@
 
 #pragma warning(disable : 4996 6031 6054)
 
-enum { NB_Max = 30, NB_PARTICIPANTS = 30, NB_CONCOURS = 20, COMMANDES = 40, Max_line = 100 };
+enum { NB_Max = 31, NB_PARTICIPANTS = 30, NB_CONCOURS = 20, COMMANDES = 40, Max_line = 100 };
 
 typedef struct {
     char nom[NB_Max];
@@ -49,22 +49,17 @@ void inscrire_programme(void) {
         char trois[NB_Max];
 
         int n = sscanf(line, "%s %s %s %s", cmd, un, deux, trois);
-
-
         /* EXIT */
 
-        if (n >= 1 && strcmp(cmd, "EXIT") == 0) {
-            return;
-        }
+        if (n == 1 && strcmp(cmd, "EXIT") == 0) exit(0);
 
 
         /* INSCRIRE */
 
-        if (n == 3 && strcmp(cmd, "INSCRIRE") == 0) {
+        else if (n == 3 && strcmp(cmd, "INSCRIRE") == 0) {
 
-            if (nombre_participants >= NB_PARTICIPANTS) {
-                continue;
-            }
+            if (nombre_participants >= NB_PARTICIPANTS || strlen(un) > NB_Max - 1 || strlen(deux) > NB_Max - 1) continue;
+            
 
             //Vérifier le doublon prénom + nom 
 
@@ -272,15 +267,12 @@ void inscrire_programme(void) {
             recup = recup - 1;
 
 
-            printf("%s %s\n",
-                I[recup].prenom,
-                I[recup].nom);
-
+            printf("%s %s\n", I[recup].prenom, I[recup].nom);
 
             // Vérifier si le participant a au moins un gain 
 
             int aucun_gain = 0;
-
+            if (nombres_concours == 0) aucun_gain = 1;
             for (int u = 0; u < nombres_concours; ++u) {
 
                 if (I[recup].NB_POINTS[u] == 0) {
@@ -297,7 +289,6 @@ void inscrire_programme(void) {
             else {
 
                 //Afficher uniquement les concours dans lesquels le score est non nul 
-
                 for (int u = 0; u < nombres_concours; ++u) {
 
                     if (I[recup].NB_POINTS[u] > 0) {
