@@ -39,71 +39,72 @@ void inscrire_programme(void) {
 
     CONCOURS concours[NB_CONCOURS];
     int nombres_concours = 0;
+    char cmd[COMMANDES];
+    char un[NB_Max];
+    char deux[NB_Max];
+    char trois[NB_Max];
 
 
     // Lire toute la ligne d'entrée 
-    while (fgets(line, sizeof(line), stdin)) {
+    while (scanf("%s", cmd)==1) {
+        
+        
 
-        char cmd[COMMANDES];
-        char un[NB_Max];
-        char deux[NB_Max];
-        char trois[NB_Max];
-
-        int n = sscanf(line, "%s %s %s %s", cmd, un, deux, trois);
         /* EXIT */
 
-        if (n == 1 && strcmp(cmd, "EXIT") == 0) exit(0);
+        if  (strcmp(cmd, "EXIT") == 0) exit(0);
 
 
         /* INSCRIRE */
+        else if (strcmp(cmd, "INSCRIRE") == 0) {
+            if (scanf("%s" "%s", un, deux) != 2) return;
+                if (nombre_participants >= NB_PARTICIPANTS || strlen(un) > NB_Max - 1 || strlen(deux) > NB_Max - 1) continue;
 
-        else if (n == 3 && strcmp(cmd, "INSCRIRE") == 0) {
 
-            if (nombre_participants >= NB_PARTICIPANTS || strlen(un) > NB_Max - 1 || strlen(deux) > NB_Max - 1) continue;
+                //Vérifier le doublon prénom + nom 
+
+                    int doublon = 0;
+
+                    for (int j = 0; j < nombre_participants; ++j) {
+
+                        if (_stricmp(I[j].prenom, un) == 0 && _stricmp(I[j].nom, deux) == 0) {
+                            doublon = 1;
+                            break;
+                        }
+                    }
+
+
+                if (doublon) printf("Nom incorrect\n");
+                else {
+
+                    strncpy(I[nombre_participants].prenom, un, NB_Max - 1);
+                    I[nombre_participants].prenom[NB_Max - 1] = '\0';
+
+                    strncpy(I[nombre_participants].nom, deux, NB_Max - 1);
+                    I[nombre_participants].nom[NB_Max - 1] = '\0';
+
+
+                    /* Initialiser les scores */
+
+                    for (int p = 0; p < NB_CONCOURS; ++p) {
+                        I[nombre_participants].NB_POINTS[p] = 0;
+                    }
+
+
+                    ++nombre_participants;
+
+                    printf("Inscription enregistree (%d)\n",
+                        nombre_participants);
+                    
+                }
             
-
-            //Vérifier le doublon prénom + nom 
-
-            int doublon = 0;
-
-            for (int j = 0; j < nombre_participants; ++j) {
-
-                if (_stricmp(I[j].prenom, un) == 0 && _stricmp(I[j].nom, deux) == 0) {
-                    doublon = 1;
-                    break;
-                }
             }
-
-
-            if (doublon) printf("Nom incorrect\n");
-            else {
-
-                strncpy(I[nombre_participants].prenom, un, NB_Max - 1);
-                I[nombre_participants].prenom[NB_Max - 1] = '\0';
-
-                strncpy(I[nombre_participants].nom, deux, NB_Max - 1);
-                I[nombre_participants].nom[NB_Max - 1] = '\0';
-
-
-                /* Initialiser les scores */
-
-                for (int p = 0; p < NB_CONCOURS; ++p) {
-                    I[nombre_participants].NB_POINTS[p] = 0;
-                }
-
-
-                ++nombre_participants;
-
-                printf("Inscription enregistree (%d)\n",
-                    nombre_participants);
-            }
-        }
 
 
         /* PARTICIPANTS */
 
-        else if (n == 1 && strcmp(cmd, "PARTICIPANTS") == 0) {
-
+        else if (strcmp(cmd, "PARTICIPANTS") == 0) {
+ 
             if (nombre_participants == 0) {
 
                 printf("Aucun participant inscrit\n");
@@ -136,48 +137,49 @@ void inscrire_programme(void) {
 
         /* CREER */
 
-        else if (n == 2 && strcmp(cmd, "CREER") == 0) {
+        else if (strcmp(cmd, "CREER") == 0) {
+            if (scanf("%s", un) != 1) return;
+                if (nombres_concours >= NB_CONCOURS) {
+                    continue;
+                }
 
-            if (nombres_concours >= NB_CONCOURS) {
-                continue;
-            }
+
+                /* Vérifier doublon de concours */
+
+                int doublonC = 0;
+
+                for (int j = 0; j < nombres_concours; ++j) {
+
+                    if (_stricmp(concours[j].nom, un) == 0) {
+
+                        doublonC = 1;
+                        break;
+                    }
+                }
 
 
-            /* Vérifier doublon de concours */
+                if (doublonC) {
 
-            int doublonC = 0;
+                    printf("Nom incorrect\n");
 
-            for (int j = 0; j < nombres_concours; ++j) {
+                }
+                else {
 
-                if (_stricmp(concours[j].nom, un) == 0) {
+                    strncpy(concours[nombres_concours].nom, un, NB_Max - 1);
 
-                    doublonC = 1;
-                    break;
+                    concours[nombres_concours].nom[NB_Max - 1] = '\0';
+
+                    printf("Creation enregistree (%d)\n", nombres_concours + 1);
+
+                    ++nombres_concours;
                 }
             }
-
-
-            if (doublonC) {
-
-                printf("Nom incorrect\n");
-
-            }
-            else {
-
-                strncpy(concours[nombres_concours].nom, un, NB_Max - 1);
-
-                concours[nombres_concours].nom[NB_Max - 1] = '\0';
-
-                printf("Creation enregistree (%d)\n", nombres_concours + 1);
-
-                ++nombres_concours;
-            }
-        }
+        
 
 
         /* CONCOURS */
 
-        else if (n == 1 && strcmp(cmd, "CONCOURS") == 0) {
+        else if (strcmp(cmd, "CONCOURS") == 0) {
 
             if (nombres_concours == 0) printf("Aucun concours cree\n");
                 else {
@@ -208,51 +210,53 @@ void inscrire_programme(void) {
 
         /* GAIN */
 
-        else if (n == 4 && strcmp(cmd, "GAIN") == 0) {
+        else if (strcmp(cmd, "GAIN") == 0) {
+            if (scanf("%s" "%s" "%s", un, deux, trois) != 3) return;
 
-            int recup_1 = atoi(un);
-            int recup_2 = atoi(deux);
-            int recup_3 = atoi(trois);
-
-
-            /* Vérifier le participant */
-
-            if (recup_1 <= 0 || recup_1 > nombre_participants) {
-
-                printf("Participant incorrect\n");
-            }
+                int recup_1 = atoi(un);
+                int recup_2 = atoi(deux);
+                int recup_3 = atoi(trois);
 
 
-            /* Vérifier le concours */
+                /* Vérifier le participant */
 
-            else if (recup_2 <= 0 || recup_2 > nombres_concours) printf("Concours incorrect\n");
+                if (recup_1 <= 0 || recup_1 > nombre_participants) {
 
-
-
-            /* Vérifier les points */
-
-            else if (recup_3 <= 0) printf("Points incorrects\n");
-
-            else {
-
-                recup_1 = recup_1 - 1;
-                recup_2 = recup_2 - 1;
+                    printf("Participant incorrect\n");
+                }
 
 
-                // Ajouter les points au participant pour le concours choisi 
+                /* Vérifier le concours */
 
-                I[recup_1].NB_POINTS[recup_2] += recup_3;
+                else if (recup_2 <= 0 || recup_2 > nombres_concours) printf("Concours incorrect\n");
 
 
-                printf("Gain enregistre\n");
-            }
+
+                /* Vérifier les points */
+
+                else if (recup_3 <= 0) printf("Points incorrects\n");
+
+                else {
+
+                    recup_1 = recup_1 - 1;
+                    recup_2 = recup_2 - 1;
+
+
+                    // Ajouter les points au participant pour le concours choisi 
+
+                    I[recup_1].NB_POINTS[recup_2] += recup_3;
+
+
+                    printf("Gain enregistre\n");
+                }
+            
         }
 
 
         /* SCORES */
 
-        else if (n == 2 && strcmp(cmd, "SCORES") == 0) {
-
+        else if (strcmp(cmd, "SCORES") == 0) {
+            if (scanf("%s", un) != 1) return;
             int recup = atoi(un);
 
 
@@ -299,6 +303,7 @@ void inscrire_programme(void) {
                             I[recup].NB_POINTS[u]);
                     }
                 }
+            
             }
         }
     }
