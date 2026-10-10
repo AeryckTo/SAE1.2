@@ -4,7 +4,7 @@
 
 #pragma warning(disable : 4996 6031 6054)
 
-enum { NB_Max = 31, NB_PARTICIPANTS = 30, NB_CONCOURS = 20, COMMANDES = 40, Max_line = 100 };
+enum { NB_Max = 31, NB_PARTICIPANTS = 30, NB_CONCOURS = 20, COMMANDES = 40 };
 
 typedef struct {
     char nom[NB_Max];
@@ -33,7 +33,6 @@ int main() {
 void inscrire_programme(void) {
 
     INCRIRE I[NB_PARTICIPANTS];
-    char line[Max_line];
 
     int nombre_participants = 0;
 
@@ -46,65 +45,65 @@ void inscrire_programme(void) {
 
 
     // Lire toute la ligne d'entrée 
-    while (scanf("%s", cmd)==1) {
-        
-        
+    while (scanf("%s", cmd) == 1) {
+
+
 
         /* EXIT */
 
-        if  (strcmp(cmd, "EXIT") == 0) exit(0);
+        if (strcmp(cmd, "EXIT") == 0) exit(0);
 
 
         /* INSCRIRE */
         else if (strcmp(cmd, "INSCRIRE") == 0) {
-            if (scanf("%s" "%s", un, deux) != 2) return;
-                if (nombre_participants >= NB_PARTICIPANTS || strlen(un) > NB_Max - 1 || strlen(deux) > NB_Max - 1) continue;
+            if (scanf("%s" "%s", un, deux) != 2) continue;
+            if (nombre_participants >= NB_PARTICIPANTS || strlen(un) > NB_Max - 1 || strlen(deux) > NB_Max - 1) continue;
 
 
-                //Vérifier le doublon prénom + nom 
+            //Vérifier le doublon prénom + nom 
 
-                    int doublon = 0;
+            int doublon = 0;
 
-                    for (int j = 0; j < nombre_participants; ++j) {
+            for (int j = 0; j < nombre_participants; ++j) {
 
-                        if (_stricmp(I[j].prenom, un) == 0 && _stricmp(I[j].nom, deux) == 0) {
-                            doublon = 1;
-                            break;
-                        }
-                    }
-
-
-                if (doublon) printf("Nom incorrect\n");
-                else {
-
-                    strncpy(I[nombre_participants].prenom, un, NB_Max - 1);
-                    I[nombre_participants].prenom[NB_Max - 1] = '\0';
-
-                    strncpy(I[nombre_participants].nom, deux, NB_Max - 1);
-                    I[nombre_participants].nom[NB_Max - 1] = '\0';
-
-
-                    /* Initialiser les scores */
-
-                    for (int p = 0; p < NB_CONCOURS; ++p) {
-                        I[nombre_participants].NB_POINTS[p] = 0;
-                    }
-
-
-                    ++nombre_participants;
-
-                    printf("Inscription enregistree (%d)\n",
-                        nombre_participants);
-                    
+                if (_stricmp(I[j].prenom, un) == 0 && _stricmp(I[j].nom, deux) == 0) {
+                    doublon = 1;
+                    break;
                 }
-            
             }
+
+
+            if (doublon) printf("Nom incorrect\n");
+            else {
+
+                strncpy(I[nombre_participants].prenom, un, NB_Max - 1);
+                I[nombre_participants].prenom[NB_Max - 1] = '\0';
+
+                strncpy(I[nombre_participants].nom, deux, NB_Max - 1);
+                I[nombre_participants].nom[NB_Max - 1] = '\0';
+
+
+                /* Initialiser les scores */
+
+                for (int p = 0; p < NB_CONCOURS; ++p) {
+                    I[nombre_participants].NB_POINTS[p] = 0;
+                }
+
+
+                ++nombre_participants;
+
+                printf("Inscription enregistree (%d)\n",
+                    nombre_participants);
+
+            }
+
+        }
 
 
         /* PARTICIPANTS */
 
         else if (strcmp(cmd, "PARTICIPANTS") == 0) {
- 
+
             if (nombre_participants == 0) {
 
                 printf("Aucun participant inscrit\n");
@@ -122,7 +121,7 @@ void inscrire_programme(void) {
                     for (int u = 0; u < nombres_concours; ++u) {
 
                         if (I[k].NB_POINTS[u] > 0) {
-                            nb_concours++;
+                            ++nb_concours;
                         }
                     }
                     printf("(%d) %s %s : %d concours\n",
@@ -139,42 +138,41 @@ void inscrire_programme(void) {
 
         else if (strcmp(cmd, "CREER") == 0) {
             if (scanf("%s", un) != 1) return;
-                if (nombres_concours >= NB_CONCOURS) {
-                    continue;
-                }
+            if (nombres_concours >= NB_CONCOURS || strlen(un) > NB_Max - 1) continue;
 
 
-                /* Vérifier doublon de concours */
 
-                int doublonC = 0;
+            /* Vérifier doublon de concours */
 
-                for (int j = 0; j < nombres_concours; ++j) {
+            int doublonC = 0;
 
-                    if (_stricmp(concours[j].nom, un) == 0) {
+            for (int j = 0; j < nombres_concours; ++j) {
 
-                        doublonC = 1;
-                        break;
-                    }
-                }
+                if (_stricmp(concours[j].nom, un) == 0) {
 
-
-                if (doublonC) {
-
-                    printf("Nom incorrect\n");
-
-                }
-                else {
-
-                    strncpy(concours[nombres_concours].nom, un, NB_Max - 1);
-
-                    concours[nombres_concours].nom[NB_Max - 1] = '\0';
-
-                    printf("Creation enregistree (%d)\n", nombres_concours + 1);
-
-                    ++nombres_concours;
+                    doublonC = 1;
+                    break;
                 }
             }
-        
+
+
+            if (doublonC) {
+
+                printf("Nom incorrect\n");
+
+            }
+            else {
+
+                strncpy(concours[nombres_concours].nom, un, NB_Max - 1);
+
+                concours[nombres_concours].nom[NB_Max - 1] = '\0';
+
+                printf("Creation enregistree (%d)\n", nombres_concours + 1);
+
+                ++nombres_concours;
+            }
+        }
+
 
 
         /* CONCOURS */
@@ -182,7 +180,7 @@ void inscrire_programme(void) {
         else if (strcmp(cmd, "CONCOURS") == 0) {
 
             if (nombres_concours == 0) printf("Aucun concours cree\n");
-                else {
+            else {
 
                 for (int u = 0; u < nombres_concours; ++u) {
 
@@ -213,43 +211,43 @@ void inscrire_programme(void) {
         else if (strcmp(cmd, "GAIN") == 0) {
             if (scanf("%s" "%s" "%s", un, deux, trois) != 3) return;
 
-                int recup_1 = atoi(un);
-                int recup_2 = atoi(deux);
-                int recup_3 = atoi(trois);
+            int recup_1 = atoi(un);
+            int recup_2 = atoi(deux);
+            int recup_3 = atoi(trois);
 
 
-                /* Vérifier le participant */
+            /* Vérifier le participant */
 
-                if (recup_1 <= 0 || recup_1 > nombre_participants) {
+            if (recup_1 <= 0 || recup_1 > nombre_participants) {
 
-                    printf("Participant incorrect\n");
-                }
-
-
-                /* Vérifier le concours */
-
-                else if (recup_2 <= 0 || recup_2 > nombres_concours) printf("Concours incorrect\n");
+                printf("Participant incorrect\n");
+            }
 
 
+            /* Vérifier le concours */
 
-                /* Vérifier les points */
-
-                else if (recup_3 <= 0) printf("Points incorrects\n");
-
-                else {
-
-                    recup_1 = recup_1 - 1;
-                    recup_2 = recup_2 - 1;
+            else if (recup_2 <= 0 || recup_2 > nombres_concours) printf("Concours incorrect\n");
 
 
-                    // Ajouter les points au participant pour le concours choisi 
 
-                    I[recup_1].NB_POINTS[recup_2] += recup_3;
+            /* Vérifier les points */
+
+            else if (recup_3 <= 0) printf("Points incorrects\n");
+
+            else {
+
+                recup_1 = recup_1 - 1;
+                recup_2 = recup_2 - 1;
 
 
-                    printf("Gain enregistre\n");
-                }
-            
+                // Ajouter les points au participant pour le concours choisi 
+
+                I[recup_1].NB_POINTS[recup_2] += recup_3;
+
+
+                printf("Gain enregistre\n");
+            }
+
         }
 
 
@@ -303,8 +301,50 @@ void inscrire_programme(void) {
                             I[recup].NB_POINTS[u]);
                     }
                 }
-            
+
             }
         }
+        else if (strcmp(cmd, "COMPARAISON") == 0) {
+            if (scanf("%s" "%s", un, deux) != 2) continue;
+            int c = atoi(un);
+            int v = atoi(deux);
+            if (c > nombres_concours || c <= 0 || v <= 0 || v > nombres_concours) {
+                printf("Identifiant incorrect\n");
+                continue;
+            }
+            --c;
+            --v;
+            int pas_concours = 0;
+            int pas_participants = 0;
+            for (int i = 0; i < nombre_participants; ++i) {
+                if (I[i].NB_POINTS[c] == 0 && I[i].NB_POINTS[v] == 0)
+                    pas_participants = 1;
+                if ((I[i].NB_POINTS[c] > 0 && I[i].NB_POINTS[v] == 0))
+                    pas_concours = 1;
+            }
+            if (pas_participants) {
+                printf("Aucun participants\n");
+                continue;
+            }
+            else if (pas_concours) {
+                printf("Concours incompatibles\n");
+                continue;
+            }
+            else {
+                printf("%s versus %s\n", concours[c].nom, concours[v].nom);
+                for (int i = 0; i < nombre_participants; ++i) {
+                    if (I[i].NB_POINTS[c] >= 0 && I[i].NB_POINTS[v] > 0)
+                        printf("(%d) %s %s : %d points/%d points : %.2f%%\n",
+                            i + 1,
+                            I[i].prenom,
+                            I[i].nom,
+                            I[i].NB_POINTS[c],
+                            I[i].NB_POINTS[v],
+                            100.0f * (float)I[i].NB_POINTS[c] / (float)I[i].NB_POINTS[v]);
+                }
+            }
+        }
+
     }
+
 }
