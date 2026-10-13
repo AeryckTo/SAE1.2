@@ -304,48 +304,130 @@ void inscrire_programme(void) {
 
             }
         }
-        /*Comparaison */
-        else if (strcmp(cmd, "COMPARAISON") == 0) {
-            if (scanf("%s" "%s", un, deux) != 2) continue;
-            int c = atoi(un);
-            int v = atoi(deux);
-            if (c > nombres_concours || c <= 0 || v <= 0 || v > nombres_concours) {
+        /* CLASSEMENT */
+        else if (strcmp(cmd, "CLASSEMENT") == 0) {
+            if (scanf("%s", un) != 1) continue;
+            int recup = atoi(un);
+            typedef struct {
+                int id;
+                int points;
+            }Classement;
+            Classement classement[NB_PARTICIPANTS];
+            int compte = 0;
+            /* Vérifier le concours */
+            if (recup <= 0 || recup > nombres_concours) {
                 printf("Identifiant incorrect\n");
                 continue;
             }
-            --c;
-            --v;
-            int pas_concours = 0;
-            int pas_participants = 0;
-            for (int i = 0; i < nombre_participants; ++i) {
-                if (I[i].NB_POINTS[c] == 0 && I[i].NB_POINTS[v] == 0)
-                    pas_participants = 1;
-                if ((I[i].NB_POINTS[c] > 0 && I[i].NB_POINTS[v] == 0))
-                    pas_concours = 1;
+            recup = recup - 1;
+            printf("%s\n", concours[recup].nom);
+
+            for (int i = 0; i < nombre_participants;++i) {
+                int pts = I[i].NB_POINTS[recup];
+                if (pts > 0) {
+                    classement[compte].id = i + 1;
+                    classement[compte].points = pts;
+                    ++compte;
+                }
+
             }
-            if (pas_participants) {
+            if (compte == 0) {
                 printf("Aucun participants\n");
                 continue;
             }
-            else if (pas_concours) {
+
+            for (int i = 0;i < compte - 1;++i) {
+                for (int j = i + 1;j < compte;++j) {
+                    if (classement[i].points<classement[j].points || classement[i].points == classement[j].points && classement[i].id>classement[j].id) {
+                        Classement tmp = classement[i];
+                        classement[i] = classement[j];
+                        classement[j] = tmp;
+                    }
+                }
+            }
+
+
+            int place[NB_PARTICIPANTS];
+            for (int i = 0;i < compte;++i) {
+                if (i == 0)place[i] = 1;
+                else if (classement[i].points == classement[i - 1].points) place[i] = place[i - 1];
+                else place[i] = i + 1;
+            }
+            for (int i = 0;i < compte;++i)
+            {
+                int tied = 0;
+                int id = classement[i].id;
+                if (i + 1 < compte && classement[i].points == classement[i + 1].points || i > 0 && classement[i].points == classement[i - 1].points) tied = 1;
+                if (tied) {
+                    printf("%dex -> (%d) %s %s : %d point\n", place[i], id, I[id - 1].prenom, I[id - 1].nom, I[i].NB_POINTS[recup]);
+                }
+                else {
+                    printf("%d -> (%d) %s %s : %d point\n", place[i], id, I[id - 1].prenom, I[id - 1].nom, I[i].NB_POINTS[recup]);
+                }
+            }
+
+        }
+
+        /* COMPARAISON */
+        else if (strcmp(cmd, "COMPARAISON") == 0) {
+
+            if (scanf("%s %s", un, deux) != 2) {
+                continue;
+            }
+
+            int c = atoi(un);
+            int v = atoi(deux);
+
+            if (c <= 0 || c > nombres_concours ||
+                v <= 0 || v > nombres_concours) {
+                printf("Identifiant incorrect\n");
+                continue;
+            }
+
+            --c;
+            --v;
+
+            int nb_participants = 0;
+            int pas_concours = 0;
+
+            /* Vérifier les participants et la compatibilité */
+            for (int i = 0; i < nombre_participants; ++i) {
+
+                if (I[i].NB_POINTS[c] > 0 || I[i].NB_POINTS[v] > 0) ++nb_participants;
+                if (I[i].NB_POINTS[v] > 0) ++pas_concours;
+            }
+
+            if (nb_participants == 0) {
+                printf("Aucun participant\n");
+                continue;
+            }
+
+            if (pas_concours == 0) {
                 printf("Concours incompatibles\n");
                 continue;
             }
-            else {
-                printf("%s versus %s\n", concours[c].nom, concours[v].nom);
-                for (int i = 0; i < nombre_participants; ++i) {
-                    if (I[i].NB_POINTS[c] >= 0 && I[i].NB_POINTS[v] > 0)
-                        printf("(%d) %s %s : %d points/%d points : %.2f%%\n",
-                            i + 1,
-                            I[i].prenom,
-                            I[i].nom,
-                            I[i].NB_POINTS[c],
-                            I[i].NB_POINTS[v],
-                            100.0f * (float)I[i].NB_POINTS[c] / (float)I[i].NB_POINTS[v]);
+
+            printf("%s versus %s\n",
+                concours[c].nom,
+                concours[v].nom);
+
+
+            // Afficher les participants ayant un score
+
+            for (int i = 0; i < nombre_participants; ++i) {
+
+                int pts1 = I[i].NB_POINTS[c];
+                int pts2 = I[i].NB_POINTS[v];
+
+                if (pts2 > 0) {
+
+                    float pourcentage =
+                        100.0f * (float)pts1 / (float)pts2;
+
+                    printf("(%d) %s %s : %d point%s/%d point%s : %.2f%%\n", i + 1, I[i].prenom, I[i].nom, pts1, pts1 > 1 ? "s" : "", pts2, pts2 > 1 ? "s" : "", pourcentage);
                 }
             }
         }
-
     }
 
 }
