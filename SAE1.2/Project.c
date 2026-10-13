@@ -304,6 +304,7 @@ void inscrire_programme(void) {
 
             }
         }
+        /*Comparaison */
         else if (strcmp(cmd, "COMPARAISON") == 0) {
             if (scanf("%s" "%s", un, deux) != 2) continue;
             int c = atoi(un);
